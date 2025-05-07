@@ -8,7 +8,6 @@ import os
 
 bot = telebot.TeleBot('7816515855:AAF1idjN_00bUSGViUXHLEbw5CMNchEolM4')
 
-
 # Команда /start — приветствие и меню
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -16,8 +15,9 @@ def start(message):
     btn1 = types.KeyboardButton("💧Расписание")
     btn2 = types.KeyboardButton("📚 Факты о ЗОЖ")
     btn3 = types.KeyboardButton("🥪 Перекус")
-    btn4 = types.KeyboardButton("⚙️ Поддержка")
-    markup.add(btn1, btn2, btn3, btn4, )
+    btn4 = types.KeyboardButton("💪 Персональные тренировки")
+    btn5 = types.KeyboardButton("⚙️ Поддержка")
+    markup.add(btn1, btn2, btn3, btn4,btn5 )
 
     # Запуск приветствия
     bot.send_message(message.chat.id,
@@ -27,7 +27,6 @@ def start(message):
     # Запуск потока для напоминаний
     reminder_thread = threading.Thread(target=send_reminders, args=(message.chat.id,), daemon=True)
     reminder_thread.start()
-
 
 # Обработка кнопки "Факты о здоровом образе жизни"
 @bot.message_handler(func=lambda message: message.text == "📚 Факты о ЗОЖ")
@@ -51,10 +50,10 @@ def handle_support(message):
         "1️⃣ **Как запустить чат-бот** - Напишите /start для начала работы с ботом.",
         "2️⃣ **Расписание** - Получите информацию о расписании приема воды.",
         "3️⃣ **Факты о здоровом образе жизни** - Интересные и полезные факты о здоровье.",
-        "4️⃣ **Написать в службу поддержки** - Свяжитесь с нашей службой поддержки."
+        "4️⃣ **Как написать в тех. поддержку** - Напиши /help.",
+        "5️⃣ **Персональные тренировки** - Контроль физической активности."
     ]
     bot.send_message(message.chat.id, "\n".join(help_text), parse_mode="Markdown")
-
 
 # Обработка кнопки "Расписание"
 @bot.message_handler(func=lambda message: message.text == "💧Расписание")
@@ -76,8 +75,30 @@ def support_handler(message):
             bot.send_photo(message.chat.id, img, caption="Правильное питание, залог долголетия!")
 
 
+@bot.message_handler(func=lambda m: m.text == "💪 Персональные тренировки")
+def handle_personal_training(message):
+    # Создаем инлайн-клавиатуру с кнопкой
+    markup = types.InlineKeyboardMarkup()
+
+    # Добавляем кнопку со ссылкой на приложение
+    markup.add(
+        types.InlineKeyboardButton(
+            text="📲 Установить приложение для Android",
+            url="https://play.google.com/store/apps/details?id=com.omy.run"
+        )
+    )
+    # Отправляем сообщение с кнопкой
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="""💪 <b>Персональные тренировки</b>
+
+Для индивидуальной программы тренировок установите приложение:""",
+        parse_mode="HTML",
+        reply_markup=markup
+    )
+
 def send_reminders(chat_id):
-    reminder_time = "18:58"  # Задаем время для первого напоминания
+    reminder_time = "22:35"  # Задаем время для первого напоминания
     while True:
         # Получаем текущее время в формате HH:MM
         now = datetime.datetime.now().strftime("%H:%M")
@@ -89,7 +110,6 @@ def send_reminders(chat_id):
             time.sleep(60)
         else:
             time.sleep(20)
-
 
 # Запуск бота
 bot.polling(none_stop=True)
